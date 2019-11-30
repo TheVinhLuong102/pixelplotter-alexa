@@ -58,7 +58,7 @@ pen1.run_to_rel_pos(speed_sp=-400, position_sp=-53)
 waitformotor(pen1)
 pen1.reset()
 print("Init printer motors")
-print("Pixel Plotter v3.1 code v4.0")
+print("Pixel Plotter v2.0 code v4.0")
 
 
 def resetMotors():
