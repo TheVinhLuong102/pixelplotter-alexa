@@ -1,0 +1,96 @@
+{
+    "interactionModel": {
+        "languageModel": {
+            "invocationName": "pixel plotter",
+            "intents": [
+                {
+                    "name": "AMAZON.CancelIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.HelpIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.StopIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.NavigateHomeIntent",
+                    "samples": []
+                },
+                {
+                    "name": "PrintIntent",
+                    "slots": [
+                        {
+                            "name": "Picture",
+                            "type": "PictureType"
+                        }
+                    ],
+                    "samples": [
+                        "print {Picture} now",
+                        "print {Picture}",
+                        "print the {Picture}",
+                        "print {Picture} on pixel plotter"
+                    ]
+                }
+            ],
+            "types": [
+                {
+                    "name": "PictureType",
+                    "values": [
+                        {
+                            "name": {
+                                "value": "maker"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "statue",
+                                "synonyms": [
+                                    "statue of liberty"
+                                ]
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "city",
+                                "synonyms": [
+                                    "saint louis"
+                                ]
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "taj",
+                                "synonyms": [
+                                    "taj mahal"
+                                ]
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "hello"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "goodbye"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "sun"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "cancel"
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}
