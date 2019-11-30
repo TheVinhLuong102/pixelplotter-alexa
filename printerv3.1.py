@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 #import python packages
-#Pixel Plotter v2.0
+#Pixel Plotter v3.1
 #install --> (sudo) apt-get install python-pip --> (sudo) pip install pillow python-ev3dev
 #running --> run (sudo) python pythonfilename.py imagefilename.png (jpg will work along with others types) -->
 #            you will be given a dialogue --> just type "" and return/enter to continue
@@ -15,15 +15,8 @@ from termcolor import colored
 
 
 # paper resolution
-horiz_deg = 1800; #degress max move
-horiz_width = 5; #inches
-horiz_res = horiz_deg/horiz_width; # degrees per inch
-vertical_deg = 850; #degress max move
-vertical_width = 6.5; #inches
-vertical_res = vertical_deg/vertical_width; # degrees per inch
-vert_move = 7;
-horiz_move = vert_move*horiz_res/vertical_res;
-res = horiz_deg/horiz_move/1.1;
+vert_move = 15;
+horiz_move = 15;
 
 # Python2 compatibility variables
 false = 0
@@ -39,15 +32,17 @@ def waitformotor(motor):
 # define motors and use brake mode
 
 paper = ev3.MediumMotor('outA')
-pen1 = ev3.LargeMotor('outB')
-pen2 = ""
+pen1 = ev3.MediumMotor('outB')
+pen2 = ev3.MediumMotor('outD')
 head = ev3.MediumMotor('outC')
 
 pen1.stop_action = "brake"
+pen2.stop_action = "brake"
 head.stop_action = "brake"
 paper.stop_action = "brake"
 head.reset()
 pen1.reset()
+pen2.reset()
 paper.reset()
 
 
@@ -55,10 +50,13 @@ paper.reset()
 
 #paper.speed_regulation_enabled=u'on'
 pen1.run_to_rel_pos(speed_sp=-400, position_sp=-53)
+pen2.run_to_rel_pos(speed_sp=400, position_sp=53)
 waitformotor(pen1)
+waitformotor(pen2)
 pen1.reset()
+pen2.reset()
 print("Init printer motors")
-print("Pixel Plotter v3.1 code v4.0")
+print("Pixel Plotter v3.1 code v4.0 alexa")
 
 
 def resetMotors():
@@ -109,7 +107,6 @@ def processPic(img,width,height):
                         lastRow = h
                         print("G", end="")
                     elif b > r and b > g :
-                        e4col = true
                         b_array[h][w] = 0
                         lastRow = h
                         print("B", end="")
@@ -126,7 +123,7 @@ def processPic(img,width,height):
     return (r_array,g_array,b_array,bl_array,e4col,lastRow)
 
 
-def runPrinter(array1,width,height):
+def runPrinter(array1,array2,width,height):
     initial = time.time()
     
     xd = 0
@@ -141,9 +138,21 @@ def runPrinter(array1,width,height):
                 # lower and raise pen
                 makedot(pen1,1)
                 # move pen left	
+            elif array2[yd][xd] == 0:
+                print("B", end="") #print block if red pixel
+                #head.run_to_abs_pos(position_sp=(horiz_move*xd), speed_sp=400, ramp_down_sp=500)
+                #waitformotor(head)
+                # lower and raise pen
+                #makedot(pen2,1)
             else:
                 print(" ", end="")
                 #move pen left
+            if array2[yd][max([0,(xd-18)])] == 0:
+                #print("B", end="") #print block if red pixel
+                head.run_to_abs_pos(position_sp=(horiz_move*xd), speed_sp=400, ramp_down_sp=500)
+                waitformotor(head)
+                # lower and raise pen
+                makedot(pen2,-1)
             xd = xd + 1
             xda = xda + 1
 
@@ -166,19 +175,16 @@ def printer(filename):
 
     r_array, g_array, b_array, bl_array, e4col, lastRow = processPic(img, width, height)
 
-    x = input('Is this picture ok? Press enter to print black...') #wait for dialogue to be answered then start printing
+    #x = input('Is this picture ok? Press enter to print black/blue...') #wait for dialogue to be answered then start printing
 
-    runPrinter(bl_array, width, lastRow+1)
+    time.sleep(1)
+
+    runPrinter(bl_array, b_array, width, lastRow+1)
     resetMotors()
     
 
     if e4col == true:
-        x = input('Ready to print red? Press enter to continue...') #wait for dialogue to be answered then start printing
-        runPrinter(r_array, width, height)
+        #x = input('Ready to print red/green? Press enter to continue...') #wait for dialogue to be answered then start printing
+        runPrinter(r_array, g_array, width, height)
         resetMotors()
-        x = input('Ready to print green? Press enter to continue...') #wait for dialogue to be answered then start printing
-        runPrinter(g_array, width, height)
-        resetMotors()
-        x = input('Ready to print blue? Press enter to continue...') #wait for dialogue to be answered then start printing
-        runPrinter(b_array, width, height)
-        resetMotors()
+    
