@@ -1,12 +1,4 @@
 #!/usr/bin/env python3
-# Copyright 2019 Amazon.com, Inc. or its affiliates.  All Rights Reserved.
-# 
-# You may not use this file except in compliance with the terms and conditions 
-# set forth in the accompanying LICENSE.TXT file.
-#
-# THESE MATERIALS ARE PROVIDED ON AN "AS IS" BASIS. AMAZON SPECIFICALLY DISCLAIMS, WITH 
-# RESPECT TO THESE MATERIALS, ALL WARRANTIES, EXPRESS, IMPLIED, OR STATUTORY, INCLUDING 
-# THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.
 
 import os
 import sys
@@ -33,21 +25,15 @@ class Picture(Enum):
     The list of directional commands and their variations.
     These variations correspond to the skill slot values.
     """
-    FORWARD = ['forward', 'forwards', 'go forward']
-    BACKWARD = ['back', 'backward', 'backwards', 'go backward']
-    LEFT = ['left', 'go left']
-    RIGHT = ['right', 'go right']
-    STOP = ['stop', 'brake']
-    HELLO = ['hello','hi']
-    TAJ = ['taj','taj mahal']
-    CITY = ['city','saint louis']
+    TAJMAHAL = ['taj','taj mahal']
+    SAINTLOUIS = ['city','saint louis']
+    STATUEOFLIBERTY = ['liberty','statue','statue of liberty']
 
 
 
 class MindstormsGadget(AlexaGadget):
     """
-    A Mindstorms gadget that performs movement based on voice commands.
-    Two types of commands are supported, directional movement and preset.
+    A MINDSTORMS plotter that prints based on voice commands.
     """
 
     def __init__(self):
@@ -76,7 +62,7 @@ class MindstormsGadget(AlexaGadget):
     def on_custom_mindstorms_gadget_control(self, directive):
         """
         Handles the Custom.Mindstorms.Gadget control directive.
-        :param directive: the custom directive with the matching namespace and name
+        Looks for the payload with the id 'picture'
         """
         try:
             payload = json.loads(directive.payload.decode("utf-8"))
@@ -84,23 +70,19 @@ class MindstormsGadget(AlexaGadget):
             control_type = payload["type"]
             if control_type == "print":
 
-                # Expected params: [direction, duration, speed]
                 self._print(payload["picture"])
 
         except KeyError:
             print("Missing expected parameters: {}".format(directive), file=sys.stderr)
 
     def _print(self, picture):
-        """
-        Handles move commands from the directive.
-        Right and left movement can under or over turn depending on the surface type.
-        :param direction: the move direction
-        :param duration: the duration in seconds
-        :param speed: the speed percentage as an integer
-        :param is_blocking: if set, motor run until duration expired before accepting another command
-        """
+        #Take in the payload with the name
+
         print("Print command: ({})".format(picture), file=sys.stderr)
         print("printing "+picture.lower().replace(" ", "")+".png")
+
+        # call printer() from printer.py
+        # conjoin words and make lowercase to match filename
         printer.printer(picture.lower().replace(" ", "")+".png")
 
 
@@ -111,7 +93,7 @@ if __name__ == '__main__':
 
     print("init alexa plotter")
 
-    # Gadget main entry point
+    # initiate plotter
     gadget.main()
 
     print("terminate alexa plotter")
