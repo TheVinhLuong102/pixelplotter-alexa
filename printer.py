@@ -15,14 +15,15 @@ from termcolor import colored
 
 
 # paper resolution
-horiz_deg = 1800; #degress max move
+horiz_deg = 2050; #degress max move
 horiz_width = 5; #inches
 horiz_res = horiz_deg/horiz_width; # degrees per inch
-vertical_deg = 850; #degress max move
-vertical_width = 6.5; #inches
+vertical_deg = 24000; #degress max move
+vertical_width = 7.5; #inches
 vertical_res = vertical_deg/vertical_width; # degrees per inch
-vert_move = 7;
+vert_move = 130;
 horiz_move = vert_move*horiz_res/vertical_res;
+#horiz_move = 7;
 res = horiz_deg/horiz_move/1.1;
 
 # Python2 compatibility variables
@@ -34,8 +35,10 @@ true = 1
 
 def waitformotor(motor):
     xxx = 0
-    while motor.state != []:
+    while motor.state != ['holding'] and motor.state != []:
+        #print(motor.state)
         xxx = 0
+    #print(motor.state)
 # define motors and use brake mode
 
 col = ev3.ColorSensor()
@@ -44,20 +47,27 @@ pen1 = ev3.LargeMotor('outB')
 pen2 = ""
 head = ev3.MediumMotor('outC')
 
-pen1.stop_action = "brake"
-head.stop_action = "brake"
-paper.stop_action = "brake"
 head.reset()
 pen1.reset()
 paper.reset()
+
+pen1.stop_action = "hold"
+head.stop_action = "hold"
+paper.stop_action = "hold"
 
 
 #move paper until color sensor recieves >50 reading
 
 #paper.speed_regulation_enabled=u'on'
-pen1.run_to_rel_pos(speed_sp=-400, position_sp=-53)
+#pen1.run_to_rel_pos(speed_sp=-400, position_sp=19)
+pen1.run_to_rel_pos(speed_sp=400, position_sp=19)
 waitformotor(pen1)
+time.sleep(.2)
 pen1.reset()
+
+pen1.stop_action = "hold"
+paper.run_to_abs_pos(position_sp=0, speed_sp=1000)
+
 print("Init printer motors")
 print("Pixel Plotter v2.0 code v4.0")
 
@@ -73,9 +83,9 @@ def resetMotors():
 
 #make a function to make a dot on the page
 def makedot(pen,dir):
-    pen.run_to_abs_pos(speed_sp=400*dir, position_sp=30*dir)
+    pen.run_to_rel_pos(speed_sp=-400*dir, position_sp=-45*dir, stop_action="coast")
     waitformotor(pen) #double check if motor is stopped before raising pen
-    pen.run_to_abs_pos(speed_sp=-400*dir, position_sp=-29*dir)
+    pen.run_to_rel_pos(speed_sp=400*dir, position_sp=20*dir, stop_action="hold")
     waitformotor(pen) #double check if motor is stopped before raising pen
 
 #resize and flip image
@@ -158,7 +168,10 @@ def runPrinter(array1,width,height):
 
 def printer(filename):
     while col.value() < 50:
-        paper.run_forever(duty_cycle_sp=40)
+        paper.run_forever(speed_sp=1000)
+
+    paper.run_to_rel_pos(position_sp=-7500, speed_sp=-1000, ramp_down_sp=500)
+    waitformotor(paper)
     paper.stop()
     paper.reset()
         

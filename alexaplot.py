@@ -83,9 +83,11 @@ class MindstormsGadget(AlexaGadget):
 
         # call printer() from printer.py
         # conjoin words and make lowercase to match filename
-        if (picture == "me") {
-                os.system("fswebcam --no-banner -r 640x480 --jpeg 85 -D 1 web-cam-shot.jpg ; convert web-cam-shot.jpg -colorspace gray -canny 0x1+10%+10%  -negate -rotate -90 -posterize 3 -resize 120 -threshold 80% -monochrome me.jpg")
-                
+        if picture.lower().replace(" ", "") == "me":
+                print("taking picture")
+                os.system("fswebcam --no-banner -r 640x480 --jpeg 85 -D 1 web-cam-shot.jpg ; convert web-cam-shot.jpg -colorspace gray -canny 0x1+10%+10%  -negate -rotate -90 -posterize 3 -resize 120 -threshold 80% -monochrome me.png")
+
+        print("starting print")       
         printer.printer(picture.lower().replace(" ", "")+".png")
 
 
