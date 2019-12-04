@@ -184,20 +184,20 @@ def printer(filename):
 
     r_array, g_array, b_array, bl_array, e4col, lastRow = processPic(img, width, height)
 
-    x = input('Is this picture ok? Press enter to print black...') #wait for dialogue to be answered then start printing
+    #x = input('Is this picture ok? Press enter to print black...') #wait for dialogue to be answered then start printing
 
     runPrinter(bl_array, width, lastRow+1)
     resetMotors()
     
 
     if e4col == true:
-        x = input('Ready to print red? Press enter to continue...') #wait for dialogue to be answered then start printing
+        #x = input('Ready to print red? Press enter to continue...') #wait for dialogue to be answered then start printing
         runPrinter(r_array, width, height)
         resetMotors()
-        x = input('Ready to print green? Press enter to continue...') #wait for dialogue to be answered then start printing
+        #x = input('Ready to print green? Press enter to continue...') #wait for dialogue to be answered then start printing
         runPrinter(g_array, width, height)
         resetMotors()
-        x = input('Ready to print blue? Press enter to continue...') #wait for dialogue to be answered then start printing
+        #x = input('Ready to print blue? Press enter to continue...') #wait for dialogue to be answered then start printing
         runPrinter(b_array, width, height)
         resetMotors()
     
