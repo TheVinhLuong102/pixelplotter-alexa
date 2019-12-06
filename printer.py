@@ -3,8 +3,7 @@
 #import python packages
 #Pixel Plotter v2.0
 #install --> (sudo) apt-get install python-pip --> (sudo) pip install pillow python-ev3dev
-#running --> run (sudo) python pythonfilename.py imagefilename.png (jpg will work along with others types) -->
-#            you will be given a dialogue --> just type "" and return/enter to continue
+#running --> run (sudo) python -c "import printer; printer.printer('filename.jpg')" (jpg will work along with others types)
 
 from PIL import Image, ImageFilter
 import ev3dev.ev3 as ev3
@@ -31,16 +30,14 @@ false = 0
 true = 1
 
 #function to ensure the motor has stopped before moving on
-
-
 def waitformotor(motor):
     xxx = 0
     while motor.state != ['holding'] and motor.state != []:
         #print(motor.state)
         xxx = 0
     #print(motor.state)
-# define motors and use brake mode
 
+# define motors and use brake/hold mode
 col = ev3.ColorSensor()
 paper = ev3.MediumMotor('outA')
 pen1 = ev3.LargeMotor('outB')
@@ -56,10 +53,7 @@ head.stop_action = "hold"
 paper.stop_action = "hold"
 
 
-#move paper until color sensor recieves >50 reading
-
-#paper.speed_regulation_enabled=u'on'
-#pen1.run_to_rel_pos(speed_sp=-400, position_sp=19)
+# initialize motors
 pen1.run_to_rel_pos(speed_sp=400, position_sp=19)
 waitformotor(pen1)
 time.sleep(.2)
@@ -72,14 +66,11 @@ print("Init printer motors")
 print("Pixel Plotter v2.0 code v4.0")
 
 def resetMotors():
+    # function to move motors back to "home"
     paper.run_to_abs_pos(position_sp=0, speed_sp=1000)
     head.run_to_abs_pos(position_sp=0, speed_sp=1000)
-#    pen1.run_to_abs_pos(position_sp=0, speed_sp=1000)
-#    pen2.run_to_abs_pos(position_sp=0, speed_sp=1000)
     waitformotor(paper)
     waitformotor(head)
-#    waitformotor(pen1)
-#    waitformotor(pen2)
 
 #make a function to make a dot on the page
 def makedot(pen,dir):
@@ -87,9 +78,6 @@ def makedot(pen,dir):
     waitformotor(pen) #double check if motor is stopped before raising pen
     pen.run_to_rel_pos(speed_sp=400*dir, position_sp=20*dir, stop_action="hold")
     waitformotor(pen) #double check if motor is stopped before raising pen
-
-#resize and flip image
-#filename = sys.argv[1]
 
 def processPic(img,width,height):
     r_array = []
@@ -133,9 +121,9 @@ def processPic(img,width,height):
             print(" "+str(h))
             w = width-1 #reset width counter
             h = h+1 #move to next row
-    return (r_array,g_array,b_array,bl_array,e4col,lastRow)
+    return (r_array,g_array,b_array,bl_array,e4col,lastRow) # return arrays to caller
 
-
+# printing function
 def runPrinter(array1,width,height):
     initial = time.time()
     
@@ -144,20 +132,20 @@ def runPrinter(array1,width,height):
     xda = 0 
     while yd < height:
         while xd < width:
-            if array1[yd][xd] == 0: #is pixel black?
-                print("D", end="") #print block if black pixel
-                head.run_to_abs_pos(position_sp=horiz_move*xd, speed_sp=400, ramp_down_sp=500)
+            if array1[yd][xd] == 0: #is pixel black/colored?
+                print("D", end="") #print block if black/colored pixel
+                head.run_to_abs_pos(position_sp=horiz_move*xd, speed_sp=400, ramp_down_sp=500) # move pen to dot's location
                 waitformotor(head)
                 # lower and raise pen
-                makedot(pen1,1)
+                makedot(pen1,1) # print the dot
                 # move pen left	
             else:
                 print(" ", end="")
-                #move pen left
+
             xd = xd + 1
             xda = xda + 1
 
-        print(" PCT: "+str(int(100*xda/(width*height)))+"% ; Time Remaining: "+str(int((100-100*xda/(width*height))*(time.time()-initial)/(100*xda/(width*height))))+"s")
+        print(" PCT: "+str(int(100*xda/(width*height)))+"% ; Time Remaining: "+str(int((100-100*xda/(width*height))*(time.time()-initial)/(100*xda/(width*height))))+"s") # algorithm to determine percent of print complete and estimate remaining time
         yd = yd + 1
         xd = 0
         # move paper forward
@@ -167,37 +155,32 @@ def runPrinter(array1,width,height):
 
 
 def printer(filename):
+    # move paper into feeder
     while col.value() < 50:
         paper.run_forever(speed_sp=1000)
-
     paper.run_to_rel_pos(position_sp=-7500, speed_sp=-1000, ramp_down_sp=500)
     waitformotor(paper)
     paper.stop()
     paper.reset()
         
-    img1 = Image.open(filename) #open image
+    img1 = Image.open(filename) #open image using python imaging library (PIL)
     img2=img1.convert("RGBA")
     img = img2.transpose(Image.FLIP_LEFT_RIGHT)
     width, height = img.size # get image size
 
     print(width," x ",height)
 
-    r_array, g_array, b_array, bl_array, e4col, lastRow = processPic(img, width, height)
+    r_array, g_array, b_array, bl_array, e4col, lastRow = processPic(img, width, height) # process the picture into arrays
 
-    #x = input('Is this picture ok? Press enter to print black...') #wait for dialogue to be answered then start printing
-
-    runPrinter(bl_array, width, lastRow+1)
+    runPrinter(bl_array, width, lastRow+1) # print from array
     resetMotors()
     
 
-    if e4col == true:
-        #x = input('Ready to print red? Press enter to continue...') #wait for dialogue to be answered then start printing
+    if e4col == true: # if the picture contains colored pixels, repeat with the colored arrays in the order red --> green --> blue
         runPrinter(r_array, width, height)
         resetMotors()
-        #x = input('Ready to print green? Press enter to continue...') #wait for dialogue to be answered then start printing
         runPrinter(g_array, width, height)
         resetMotors()
-        #x = input('Ready to print blue? Press enter to continue...') #wait for dialogue to be answered then start printing
         runPrinter(b_array, width, height)
         resetMotors()
     

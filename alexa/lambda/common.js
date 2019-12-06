@@ -13,41 +13,53 @@
 
 const Alexa = require('ask-sdk-core');
 
-const HelpIntentHandler = {
-    canHandle(handlerInput) {
-        return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
-            && Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.HelpIntent';
-    },
-    handle(handlerInput) {
-        const speakOutput = 'You can say hello to me! How can I help?';
+const helpMessage = 'I hope you love both LEGO and Alexa as much as I do.  I can print fun pictures and tell you about the history of the picture. What would you like to do?';
+const exitSkillMessage = 'Bye';
 
-        return handlerInput.responseBuilder
-            .speak(speakOutput)
-            .reprompt(speakOutput)
-            .getResponse();
-    }
+
+const HelpIntentHandler = {
+  canHandle(handlerInput) {
+    console.log('Inside HelpHandler');
+    const request = handlerInput.requestEnvelope.request;
+    return request.type === 'IntentRequest' &&
+           request.intent.name === 'AMAZON.HelpHandler';
+  },
+  handle(handlerInput) {
+    return handlerInput.responseBuilder
+      .speak(helpMessage)
+      .reprompt(helpMessage)
+      .getResponse();
+  },
 };
-const CancelAndStopIntentHandler = {
-    canHandle(handlerInput) {
-        return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
-            && (Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.CancelIntent'
-                || Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.StopIntent');
-    },
-    handle(handlerInput) {
-        const speakOutput = 'Goodbye!';
-        return handlerInput.responseBuilder
-            .speak(speakOutput)
-            .getResponse();
-    }
+
+const ExitHandler = {
+  canHandle(handlerInput) {
+    console.log('Inside ExitHandler');
+    const request = handlerInput.requestEnvelope.request;
+
+    return request.type === 'IntentRequest' && (
+      request.intent.name === 'AMAZON.StopIntent' ||
+      request.intent.name === 'AMAZON.PauseIntent' ||
+      request.intent.name === 'AMAZON.CancelIntent'
+    );
+  },
+  handle(handlerInput) {
+    return handlerInput.responseBuilder
+      .speak(exitSkillMessage)
+      .getResponse();
+  },
 };
+
+
+
 const SessionEndedRequestHandler = {
-    canHandle(handlerInput) {
-        return Alexa.getRequestType(handlerInput.requestEnvelope) === 'SessionEndedRequest';
-    },
-    handle(handlerInput) {
-        // Any cleanup logic goes here.
-        return handlerInput.responseBuilder.getResponse();
-    }
+  canHandle(handlerInput) {
+    return handlerInput.requestEnvelope.request.type === 'SessionEndedRequest';
+  },
+  handle(handlerInput) {
+    console.log(`Session ended with reason: ${JSON.stringify(handlerInput.requestEnvelope)}`);
+    return handlerInput.responseBuilder.getResponse();
+  },
 };
 
 // The intent reflector is used for interaction model testing and debugging.
@@ -69,23 +81,22 @@ const IntentReflectorHandler = {
     }
 };
 
-// Generic error handling to capture any syntax or routing errors. If you receive an error
-// stating the request handler chain is not found, you have not implemented a handler for
-// the intent being invoked or included it in the skill builder below.
 const ErrorHandler = {
-    canHandle() {
-        return true;
-    },
-    handle(handlerInput, error) {
-        console.log(`~~~~ Error handled: ${error.stack}`);
-        const speakOutput = `Sorry, I had trouble doing what you asked. Please try again.`;
+  canHandle() {
+    console.log('Inside ErrorHandler');
+    return true;
+  },
+  handle(handlerInput, error) {
+    console.log('Inside ErrorHandler - handle');
+    console.log(`Error handled: ${JSON.stringify(error)}`);
+    console.log(`Handler Input: ${JSON.stringify(handlerInput)}`);
 
-        return handlerInput.responseBuilder
-            .speak(speakOutput)
-            .reprompt(speakOutput)
-            .getResponse();
-    }
+    return handlerInput.responseBuilder
+      .speak(`Something went wrong.`)
+      .getResponse();
+  },
 };
+
 
 // The request interceptor is used for request handling testing and debugging.
 // It will simply log the request in raw json format before any processing is performed.
@@ -100,11 +111,14 @@ const RequestInterceptor = {
     }
 };
 
+
+
+
 module.exports = {
     HelpIntentHandler,
-    CancelAndStopIntentHandler,
     SessionEndedRequestHandler,
     IntentReflectorHandler,
     ErrorHandler,
-    RequestInterceptor
+    RequestInterceptor,
+    ExitHandler
     };

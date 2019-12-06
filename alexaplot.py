@@ -81,11 +81,13 @@ class MindstormsGadget(AlexaGadget):
         print("Print command: ({})".format(picture), file=sys.stderr)
         print("printing "+picture.lower().replace(" ", "")+".png")
 
-        # call printer() from printer.py
         # conjoin words and make lowercase to match filename
         if picture.lower().replace(" ", "") == "custom":
-                print("taking picture")
-                os.system("fswebcam --no-banner -r 640x480 --jpeg 85 -D 1 web-cam-shot.jpg ; convert web-cam-shot.jpg -colorspace gray -canny 0x1+10%+10%  -negate -rotate -90 -posterize 3 -resize 120 -threshold 80% -monochrome custom.png")
+            # if the print id is "custom" - take a picture using the webcam. Use imagemagick to do canny edge detection and various edits to optimize the picture for printing
+            print("taking picture")
+            os.system("fswebcam --no-banner -r 640x480 --jpeg 85 -D 1 web-cam-shot.jpg ; convert web-cam-shot.jpg -colorspace gray -canny 0x1+10%+10%  -negate -rotate -90 -posterize 3 -resize 120 -threshold 80% -monochrome custom.png")
+
+        # call printer() from printer.py
 
         print("starting print")       
         printer.printer(picture.lower().replace(" ", "")+".png")

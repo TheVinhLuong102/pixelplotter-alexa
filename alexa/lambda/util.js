@@ -1,17 +1,25 @@
-/*
- * Copyright 2019 Amazon.com, Inc. or its affiliates.  All Rights Reserved.
- *
- * You may not use this file except in compliance with the terms and conditions 
- * set forth in the accompanying LICENSE.TXT file.
- *
- * THESE MATERIALS ARE PROVIDED ON AN "AS IS" BASIS. AMAZON SPECIFICALLY DISCLAIMS, WITH 
- * RESPECT TO THESE MATERIALS, ALL WARRANTIES, EXPRESS, IMPLIED, OR STATUTORY, INCLUDING 
- * THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.
-*/
-
 'use strict';
 
+const AWS = require('aws-sdk');
 const Https = require('https');
+
+
+const s3SigV4Client = new AWS.S3({
+    signatureVersion: 'v4'
+});
+
+module.exports.getS3PreSignedUrl = function getS3PreSignedUrl(s3ObjectKey) {
+
+    const bucketName = process.env.S3_PERSISTENCE_BUCKET;
+    const s3PreSignedUrl = s3SigV4Client.getSignedUrl('getObject', {
+        Bucket: bucketName,
+        Key: s3ObjectKey,
+        Expires: 60*1 // the Expires is capped for 1 minute
+    });
+    console.log(`Util.s3PreSignedUrl: ${s3ObjectKey} URL ${s3PreSignedUrl}`);
+    return s3PreSignedUrl;
+
+}
 
 /**
  * Build a custom directive payload to the gadget with the specified endpointId
