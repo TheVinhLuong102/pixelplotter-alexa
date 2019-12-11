@@ -116,7 +116,7 @@ handle: async function(handlerInput) {
 };
 
 // Construct and send a custom directive to the connected gadget with
-// data from the MoveIntent request.
+// data from the PrintIntent request.
 const PrintIntentHandler = {
     canHandle(handlerInput) {
         return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
@@ -150,7 +150,7 @@ const PrintIntentHandler = {
 
 
         const speechOutput = (picture === "cancel")
-            ?  "Cancelling moon"
+            ?  "Cancelling print"
             : `${picture} printing`;
 
         return handlerInput.responseBuilder
