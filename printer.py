@@ -1,9 +1,9 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
-#import python packages
 #Pixel Plotter v2.0
 #install --> (sudo) apt-get install python3-pip  --> (sudo) pip3 install pillow python-ev3dev
-#running --> run (sudo) python -c "import printer; printer.printer('filename.jpg')" (jpg will work along with others types)
+#running --> run (sudo) python3 -c "import printer; printer.printer('filename.jpg')" (jpg will work along with others types)
+#import python packages, this will work on python 2 or 3 as long as the proper libraries are installed
 
 from PIL import Image, ImageFilter
 import ev3dev.ev3 as ev3
