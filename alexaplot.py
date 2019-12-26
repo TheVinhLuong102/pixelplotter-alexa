@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 
+# install --> (sudo) apt-get install python3-pip bluetooth libbluetooth-dev libudev-dev bluez-hcidump --> (sudo) pip3 install pillow python-ev3dev protobuf src
+# this is the program that you run to launch the printer system and connect to the Echo
+# to run --> (sudo) python3 alexaplot.py
+
 import os
 import sys
 import time
