@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 #import python packages
 #Pixel Plotter v2.0
-#install --> (sudo) apt-get install python-pip --> (sudo) pip install pillow python-ev3dev
+#install --> (sudo) apt-get install python3-pip  --> (sudo) pip3 install pillow python-ev3dev
 #running --> run (sudo) python -c "import printer; printer.printer('filename.jpg')" (jpg will work along with others types)
 
 from PIL import Image, ImageFilter
