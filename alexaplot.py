@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 # install --> (sudo) apt-get install python3-pip bluetooth libbluetooth-dev libudev-dev bluez-hcidump --> (sudo) pip3 install pillow python-ev3dev protobuf src
+# depending on your version of EV3Dev, some of these might already be installed
 # this is the program that you run to launch the printer system and connect to the Echo
 # to run --> (sudo) python3 alexaplot.py
 
